@@ -10,7 +10,6 @@ export class fsAdapter {
     this.load = this.load.bind(this);
     this.save = this.save.bind(this);
     this.reset = this.reset.bind(this);
-    this.snapshot = this.snapshot.bind(this);
   }
 
   async #readTable(tableName) {
