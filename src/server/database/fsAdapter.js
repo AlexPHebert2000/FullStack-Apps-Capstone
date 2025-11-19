@@ -4,11 +4,9 @@ import { Buffer } from 'buffer';
 export class fsAdapter {
     #tables;
     #filePrefix;
-    #filesCreated;
   constructor (tables, filePrefix = "./src/server/database/files/"){
     this.#tables = tables;
     this.#filePrefix = filePrefix;
-    this.#filesCreated = false;
     this.load = this.load.bind(this);
     this.save = this.save.bind(this);
     this.reset = this.reset.bind(this);
@@ -28,16 +26,19 @@ export class fsAdapter {
 
   async #createFiles() {
     for (let tableName of this.#tables){
-      await fs.writeFile(`${this.#filePrefix}${tableName}.txt`, new Uint8Array(Buffer.from("{}")));
-      console.log(`file \"${this.#filePrefix}${tableName}.txt\" created`);
+      try{
+        await fs.writeFile(`${this.#filePrefix}${tableName}.txt`, new Uint8Array(Buffer.from("[]")), {flag:"wx"});
+      }
+      catch(e){
+        if (e.code !== 'EEXIST'){
+          console.log(e.message);
+        }
+      }
     }
   }
 
   async load(){
-    if (! this.#filesCreated ){
-      await this.#createFiles();
-      this.#filesCreated = true;
-    }
+    await this.#createFiles();
     const data = {}
     for (let tableName of this.#tables) {
       let table = await this.#readTable(tableName);
@@ -46,7 +47,15 @@ export class fsAdapter {
     return data;
   }
 
-  async save(){}
-  reset(){}
+  async save(d){
+    const tables = [...this.#tables]
+      .forEach(async (tableName) => {
+        await fs.writeFile(`${this.#filePrefix}${tableName}.txt`, new Uint8Array(Buffer.from(JSON.stringify(d[tableName]))))
+      })
+  }
+  async reset(){
+    await this.#createFiles();
+  }
+
   snapshot(){}
 }

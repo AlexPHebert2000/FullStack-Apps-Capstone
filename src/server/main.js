@@ -2,8 +2,11 @@ import express from "express";
 import ViteExpress from "vite-express";
 import * as db from "./database/index.js";
 import { fsAdapter } from "./database/fsAdapter.js";
+import bodyParser from "body-parser";
 
 const app = express();
+
+app.use(bodyParser.json());
 
 //db setup middleware
 app.use(async (req, res,  next) => {
@@ -12,8 +15,14 @@ app.use(async (req, res,  next) => {
   next();
 })
 
-app.get("/test/:table", async (req, res) => {
-  res.send(db.boot());
+app.post("/test/:table", async (req, res) => {
+  await db.insertOne(req.params.table, req.body);
+  res.sendStatus(201);
+})
+
+app.get("/test/:table/:id", async (req, res) => {
+  const data = await db.findOne(req.params.table, (val) => val.id === req.params.id);
+  res.send(data)
 })
 
 ViteExpress.listen(app, 3000, () =>
