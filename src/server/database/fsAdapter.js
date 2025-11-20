@@ -47,10 +47,9 @@ export class fsAdapter {
   }
 
   async save(d){
-    const tables = [...this.#tables]
-      .forEach(async (tableName) => {
-        await fs.writeFile(`${this.#filePrefix}${tableName}.txt`, new Uint8Array(Buffer.from(JSON.stringify(d[tableName]))))
-      })
+    for(let tableName of this.#tables){
+      await fs.writeFile(`${this.#filePrefix}${tableName}.txt`, new Uint8Array(Buffer.from(JSON.stringify(d[tableName]))))
+    }
   }
   async reset(){
     for (let tableName of this.#tables){
