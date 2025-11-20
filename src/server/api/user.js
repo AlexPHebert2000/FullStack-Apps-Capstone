@@ -19,6 +19,27 @@ userAPI.post("/create", async (req, res) => {
     console.log(e.message);
     res.sendStatus(500);
   }
+});
+
+userAPI.post("/login", async (req, res) => {
+  const {email, password} = req.body;
+  try {
+    const user = await db.findOne('user', (val) => val.email === email);
+    if(!user){
+      res.sendStatus(401);
+      return;
+    }
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid){
+      res.sendStatus(401);
+      return;
+    }
+    res.send({...user, password: undefined});
+  }
+  catch(e){
+    console.log(e.message);
+    res.sendStatus(500);
+  }
 })
 
 export default userAPI
