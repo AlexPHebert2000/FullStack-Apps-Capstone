@@ -1,15 +1,10 @@
 import "dotenv/config";
-import express from "express";
-import ViteExpress from "vite-express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import * as db from "./database/index.js";
-import { fsAdapter } from "./database/fsAdapter.js";
-import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
-import api from './api/index.js'
+import ViteExpress from "vite-express";
+import makeApp from './app.js';
 
-const app = express();
+const app = makeApp(["user", "session", "review"]);
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -17,17 +12,6 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST"]
   }
 });
-
-app.use(bodyParser.json());
-app.use(cookieParser());
-
-app.use(async (req, res,  next) => {
-  db.useAdapter(new fsAdapter(["user", "session", "review"]));
-  await db.boot();
-  next();
-})
-
-app.use("/api", api);
 
 const rooms = new Map();
 
