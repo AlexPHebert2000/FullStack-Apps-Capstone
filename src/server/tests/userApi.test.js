@@ -30,7 +30,7 @@ test("POST api/user/create", async() => {
   await request(app).post(`/api/user/create`).send(userData)
     .expect(201)
 
-  user = JSON.parse(await fs.readFile(FILE_LOCATION + "user.txt"))[1];
+  user = JSON.parse(await fs.readFile(FILE_LOCATION + "user.txt"))[0];
   const {username, email, password} = user;
 
   expect(username).toEqual(userData.username);
