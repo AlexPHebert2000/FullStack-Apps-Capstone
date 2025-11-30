@@ -4,6 +4,31 @@ import venuesAPI from "./venues.js";
 
 const tagAPI = Router();
 
+tagAPI.get("/:id", async (req, res) => {
+  const {id} = req.params;
+  try{
+    const tag = await db.findOneBy('tag', {id});
+    if (!tag){
+      res.sendStatus(404);
+      return;
+    }
+    tag.venues = [];
+    for (let venueID of tag.venueIDs){
+      const venue = await db.findOneBy('venue', {id: venueID});
+      venue.tags = [];
+      for(let tagID of venue.tagIDs){
+        venue.tags.push(await db.findOneBy('tag', {id: tagID}))
+      }
+      tag.venues.push(venue)
+    }
+    res.send(tag);
+  }
+  catch(e){
+    console.log(e.message);
+    res.sendStatus(500);
+  }
+})
+
 tagAPI.post('/create', async (req, res) => {
   const {name} = req.body;
   try {
@@ -59,8 +84,15 @@ tagAPI.put('/add', async (req, res) => {
 });
 
 tagAPI.get("/list", async (req, res) => {
-  const tagList = await db.findManyBy("tag");
-  res.send(tagList);
+  try{
+
+    const tagList = await db.findManyBy("tag");
+    res.send(tagList);
+  }
+    catch(e){
+    console.log(e.message);
+    res.sendStatus(500);
+  }
 })
 
 export default tagAPI;
