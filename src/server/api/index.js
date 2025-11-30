@@ -3,6 +3,7 @@ import userAPI from './user.js';
 import venuesAPI from './venues.js';
 import reviewsAPI from './reviews.js';
 import googlePlacesAPI from './googlePlaces.js';
+import tagAPI from './tags.js';
 
 const api = Router()
 
@@ -10,5 +11,6 @@ api.use('/user', userAPI)
 api.use('/venues', venuesAPI)
 api.use('/reviews', reviewsAPI)
 api.use('/places', googlePlacesAPI)
+api.use('/tag', tagAPI)
 
 export default api;
