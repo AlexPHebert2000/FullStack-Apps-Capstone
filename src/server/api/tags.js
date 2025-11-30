@@ -1,6 +1,5 @@
 import { Router } from "express";
 import * as db from '../database/index.js'
-import venuesAPI from "./venues.js";
 
 const tagAPI = Router();
 
