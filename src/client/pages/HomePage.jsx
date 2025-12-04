@@ -21,7 +21,7 @@ function HomePage({ onLogout, onViewVenue }) {
   const loadVenues = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/venues", {
+      const response = await fetch("/api/venues?search=nearby", {
         credentials: "include"
       });
       if (response.ok) {
