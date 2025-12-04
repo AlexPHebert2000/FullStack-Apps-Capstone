@@ -1,6 +1,9 @@
 import TagContainer from "./TagContainer";
 
-const VenueCard = ({venue}) => {
+const VenueCard = ({venue, tagFilterFn}) => {
+  for (let tag of venue.tags){
+    tag.onClick = tagFilterFn(tag)
+  }
   return (
     <div key={venue.id} className="venue-card">
       <div className="venue-info">

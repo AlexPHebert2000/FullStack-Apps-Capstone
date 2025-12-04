@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import "../App.css";
 import TagContainer from "../components/TagContainer";
 import VenueCard from "../components/VenueCard";
@@ -11,6 +11,12 @@ function HomePage({ onLogout, onViewVenue }) {
   useEffect(() => {
     loadVenues();
   }, []);
+
+   const tagClickToFilterFactory = (tag) => {
+    return () => { 
+      setVenues((currentVenues) => currentVenues.filter(({tagIDs}) => tagIDs.includes(tag.id)));
+    }
+   }
 
   const loadVenues = async () => {
     setLoading(true);
@@ -87,7 +93,7 @@ function HomePage({ onLogout, onViewVenue }) {
           </div>
         ) : (
           <div className="venues-grid">
-            {filteredVenues.map(venue => <VenueCard venue={venue} />)}
+            {filteredVenues.map(venue => <VenueCard venue={venue} tagFilterFn={tagClickToFilterFactory}/>)}
           </div>
         )}
       </main>
