@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import "../App.css";
+import TagContainer from "../components/TagContainer";
+import VenueCard from "../components/VenueCard";
 
 function HomePage({ onLogout, onViewVenue }) {
   const [venues, setVenues] = useState([]);
@@ -77,7 +79,6 @@ function HomePage({ onLogout, onViewVenue }) {
           />
           <button onClick={handleSearch} className="search-button">Search</button>
         </div>
-
         {loading ? (
           <div className="loading">Loading venues...</div>
         ) : filteredVenues.length === 0 ? (
@@ -86,31 +87,7 @@ function HomePage({ onLogout, onViewVenue }) {
           </div>
         ) : (
           <div className="venues-grid">
-            {filteredVenues.map(venue => (
-              <div key={venue.id} className="venue-card">
-                <div className="venue-info">
-                  <h2>{venue.name}</h2>
-                  <p className="venue-location">📍 {venue.location}</p>
-                  {venue.description && (
-                    <p className="venue-description">{venue.description}</p>
-                  )}
-                  <div className="venue-rating">
-                    <span className="stars">
-                      {"★".repeat(Math.floor(venue.rating || 0))}
-                      {"☆".repeat(5 - Math.floor(venue.rating || 0))}
-                    </span>
-                    <span className="rating-number">{venue.rating ? venue.rating.toFixed(1) : "No ratings"}</span>
-                    <span className="review-count">({venue.reviewCount || 0} reviews)</span>
-                  </div>
-                  <button 
-                    onClick={() => onViewVenue(venue.id)} 
-                    className="view-venue-button"
-                  >
-                    View Details
-                  </button>
-                </div>
-              </div>
-            ))}
+            {filteredVenues.map(venue => <VenueCard venue={venue} />)}
           </div>
         )}
       </main>
