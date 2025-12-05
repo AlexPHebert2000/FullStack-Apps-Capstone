@@ -106,11 +106,14 @@ venuesAPI.get("/:id", async (req, res) => {
     }
 
     const place = response.data.result;
-    console.log(place.review)
 
     await db.upsertOne('venue', {id}, {googleReviews : place.reviews})
 
     const dbVenue = await db.findOneBy('venue', {id})
+    dbVenue.tags = [];
+    for( let tagID of dbVenue.tagIDs){
+      dbVenue.tags.push(await db.findOneBy('tag', {id: tagID}));
+    }
     
     res.send(dbVenue);
   } catch (e) {

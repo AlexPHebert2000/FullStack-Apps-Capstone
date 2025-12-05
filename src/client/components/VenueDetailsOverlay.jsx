@@ -1,5 +1,6 @@
 import "../App.css";
 import { useState } from "react";
+import TagContainer from "./TagContainer";
 
 const VenueDetailsOverlay = ({venue, visibility, onClose}) => {
   if (!venue){return <></>}
@@ -29,7 +30,8 @@ const VenueDetailsOverlay = ({venue, visibility, onClose}) => {
   };
 
   return (
-    <div style={{
+    <div 
+      style={{
       position: "fixed",
       display: "flex",
       justifyContent: "center",
@@ -40,7 +42,8 @@ const VenueDetailsOverlay = ({venue, visibility, onClose}) => {
       background: "#000a",
       visibility: visibility ? "auto" : "hidden"
       }}>
-      <div style={{
+      <div 
+        style={{
         background: "#eee",
         width: "90%",
         height: "100%",
@@ -48,14 +51,15 @@ const VenueDetailsOverlay = ({venue, visibility, onClose}) => {
         padding: 20,
         borderRadius: "12px 12px 0px 0px"
       }}>
-        <div style={{
-          background: "#000a",
+        <div 
+          style={{
+          background: "#000b",
           position: "relative",
           width: 80,
           display: 'flex',
           justifyContent: 'center',
           alignItems:"center",
-          borderRadius: 5,
+          borderRadius: 20,
           bottom : 10,
           }}
           onClick={onClose}
@@ -80,6 +84,13 @@ const VenueDetailsOverlay = ({venue, visibility, onClose}) => {
               ({venue.reviewCount || 0} reviews)
             </span>
           </div>
+        </div>
+        <div className="venue-header">
+          <div className="reviews-header">
+            <h3>Tags</h3>
+          </div>
+          <TagContainer tags={venue.tags}/>
+          
         </div>
         {venue.googleReviews && venue.googleReviews.length > 0 && (
         <div className="reviews-section">
