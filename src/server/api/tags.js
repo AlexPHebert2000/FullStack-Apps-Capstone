@@ -84,13 +84,21 @@ tagAPI.put('/add', async (req, res) => {
 tagAPI.patch("/remove", async (req, res) => {
   const {venueID, tagID} = req.body;
   try{
-    await db.transact((doc) => {
+    const doc = await db.transact((doc) => {
       const venueIndex = doc.venue.findIndex(venue => venue.id === venueID);
       doc.venue[venueIndex].tagIDs.splice(doc.venue[venueIndex].tagIDs.findIndex((t) => t.id === tagID), 1);
       
       const tagIndex = doc.tag.findIndex(tag => tag.id === tagID);
       doc.tag[tagIndex].venueIDs.splice(doc.tag[tagIndex].venueIDs.findIndex(v => v.id === venueID), 1);
     });
+    
+    const newVenue = await db.findOneBy('venue', {id: venueID})
+    newVenue.tags = []
+    for(let id of newVenue.tagIDs){
+      newVenue.tags.push(await db.findOneBy('tag', {id}));
+    }
+    console.log(newVenue)
+    res.status(201).send(newVenue);
   }
   catch(e){
     console.log(e.message);
@@ -106,13 +114,20 @@ tagAPI.post("/upsert", async (req, res) => {
       dbTag = await db.insertOne('tag', {name, color: `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, "0")}`, venueIDs: []});
     }
     const tagID = dbTag.id;
-    await db.transact((doc) => {
+    const doc = await db.transact((doc) => {
       const venueIndex = doc.venue.findIndex(venue => venue.id === venueID);
       doc.venue[venueIndex].tagIDs.push(tagID);
       
       const tagIndex = doc.tag.findIndex(tag => tag.id === tagID);
       doc.tag[tagIndex].venueIDs.push(venueID);
     });
+    const newVenue = await db.findOneBy('venue', {id: venueID})
+    newVenue.tags = []
+    for(let id of newVenue.tagIDs){
+      newVenue.tags.push(await db.findOneBy('tag', {id}));
+    }
+    console.log(newVenue)
+    res.status(201).send(newVenue);
   }
   catch(e){
     console.log(e.message);

@@ -3,6 +3,7 @@ import "../App.css";
 import TagContainer from "../components/TagContainer";
 import VenueCard from "../components/VenueCard";
 import VenueDetailsOverlay from "../components/VenueDetailsOverlay";
+import axios from "axios";
 
 function HomePage({ onLogout }) {
   const [fullVenues, setFullVenues] = useState([]);
@@ -22,6 +23,36 @@ function HomePage({ onLogout }) {
     } catch (error) {
       console.error("Error loading venue details:", error);
     }
+  }
+
+  const handleAddTag = async (venueID, name) => {
+    const {data} = await axios.post("/api/tag/upsert", {name, venueID});
+    setDetailedVenue(data);
+    setFullVenues(list => {
+      const newList = [...list];
+      newList[list.findIndex(v => v.id === data.id)] = data;
+      return newList;
+    })
+    setVenues(list => {
+      const newList = [...list];
+      newList[list.findIndex(v => v.id === data.id)] = data;
+      return newList;
+    })
+  }
+
+  const handleRemoveTag = async (venueID, tagID) => {
+    const {data} = await axios.patch('/api/tag/remove', {venueID, tagID});
+    setDetailedVenue(data);
+        setFullVenues(list => {
+      const newList = [...list];
+      newList[list.findIndex(v => v.id === data.id)] = data;
+      return newList;
+    })
+    setVenues(list => {
+      const newList = [...list];
+      newList[list.findIndex(v => v.id === data.id)] = data;
+      return newList;
+    })
   }
 
   const onClose = () => {
@@ -132,7 +163,7 @@ function HomePage({ onLogout }) {
   };
   return (
     <div className="home-page" >
-      <VenueDetailsOverlay venue={detailedVenue} visibility={!!detailedVenue} onClose={onClose} />
+      <VenueDetailsOverlay venue={detailedVenue} visibility={!!detailedVenue} handleAddTag={handleAddTag} handleRemoveTag={handleRemoveTag} onClose={onClose} />
       <header className="home-header">
         <h1>Venue Reviews</h1>
         <nav>
